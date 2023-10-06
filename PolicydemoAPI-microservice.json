@@ -1,0 +1,21 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:CreateTable",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:UpdateItem",
+                "dynamodb:UpdateTable",
+                "dynamodb:DescribeTable"
+            ],
+            "Resource": "arn:aws:dynamodb:eu-west-2:548678486092:table/CommentsOnMyResume"
+        }
+    ]
+}

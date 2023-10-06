@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<!-- this v6 has everyting from v5 and in this I am adding a auth token in the GET API request  -->
+<!-- -->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>2Microservices in AWS</title>
+    <!-- Add some CSS to change client UI -->
+    <style>
+    body {
+        background-color: #232F3E;
+        }
+    label, button {
+        color: #FF9900;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+        margin-left: 40px;
+        }
+     input {
+        color: #232F3E;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 20px;
+        margin-left: 20px;
+        }
+     table, th, td {
+        border: 1px solid black;
+		border-collapse: collapse;
+		color: #FFFFFF;
+		padding-top: 10px;
+		padding-bottom: 20px;
+		padding-left: 30px;
+		padding-right: 40px;
+        }
+     h1 {
+        color: #FFFFFF;
+        }
+     h2 {
+        color: #FFFF99;
+        }
+     h3 {
+        color: #FFFFEE;
+        }
+	 hr {
+		color: #FF0000; 
+		background-color: #FF0000; 
+		height: 2px; 
+		border: none;
+		}
+    </style>
+    <script>
+        // define the callAPI function that takes a first name and last name as parameters
+        var callAPI = (firstName,lastName,company,comment)=>{
+            // instantiate a headers object
+            var myHeaders = new Headers();
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
+            // using built in JSON utility package turn object to string and store in a variable
+            var raw = JSON.stringify({"fName":firstName,"lName":lastName,"company":company,"comment":comment});
+            // create a JSON object with parameters for API call and store in a variable
+            var requestOptions = {
+                method: 'POST',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            // make API call with parameters and use promises to get response
+            fetch("https://nnz4uc9tz3.execute-api.eu-west-2.amazonaws.com/dev", requestOptions)
+            .then(response => response.text())
+            .then(result => alert(JSON.parse(result).body))
+            .catch(error => console.log('error', error));
+			
+            // Call the fetchDataAndRenderTable function to get the latest values from the DB
+            fetchDataAndRenderTable();
+		}
+		
+		var callPUTAPI = (ID,firstName,lastName,company,comment)=>{
+            // instantiate a headers object
+            alert("callPUTAPI function called")
+			var myHeaders = new Headers();
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
+            // using built in JSON utility package turn object to string and store in a variable
+            var raw = JSON.stringify({"ID":ID,"fName":firstName,"lName":lastName,"company":company,"comment":comment});
+            // create a JSON object with parameters for API call and store in a variable
+            var requestOptions = {
+                method: 'PUT',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            // make API call with parameters and use promises to get response
+            fetch("https://nnz4uc9tz3.execute-api.eu-west-2.amazonaws.com/dev", requestOptions)
+            .then(response => response.text())
+            .then(result => alert(JSON.parse(result).body))
+            .catch(error => console.log('error', error));
+			
+			// Call the fetchDataAndRenderTable function to get the latest values from the DB
+			fetchDataAndRenderTable();
+        }
+		
+		var callPATCHAPI = (ID,firstName,lastName,company,comment)=>{
+            // instantiate a headers object
+			const message = "Function callPATCHAPI called."
+			const messageID = "The ID is: "
+			const messagefName = "The First Name is: "
+			const messagelName = "The Last Name is: "
+			const messageCompany = "The Company is: "
+			const messageComment = "The Comment is: "
+            alert(message + "\n" + messageID + ID  + "\n" +messagefName + firstName +"\n" +messagelName + lastName  + "\n" +messageCompany + company  + "\n" +messageComment + comment )
+			
+			var myHeaders = new Headers();
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
+            // using built in JSON utility package turn object to string and store in a variable
+            var raw = JSON.stringify({"ID":ID,"fName":firstName,"lName":lastName,"company":company,"comment":comment});
+            // create a JSON object with parameters for API call and store in a variable
+            var requestOptions = {
+                method: 'PATCH',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            // make API call with parameters and use promises to get response
+            fetch("https://nnz4uc9tz3.execute-api.eu-west-2.amazonaws.com/dev", requestOptions)
+            .then(response => response.text())
+            .then(result => alert(JSON.parse(result).body))
+            .catch(error => console.log('error', error));
+			
+			// Call the fetchDataAndRenderTable function to get the latest values from the DB
+			fetchDataAndRenderTable();
+        }
+
+		var callDELETEAPI = (ID, authToken) => {
+			const message = "Function callDELETEAPI called."
+			const messageID = "The ID is: "
+			const messageAuthToken = "The authorization Token is: "
+			alert(message + "\n" + messageID + ID + "\n" + messageAuthToken + authToken)
+			
+			var myHeaders = new Headers();
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
+			myHeaders.append("authorizationToken",authToken); 
+            // using built in JSON utility package turn object to string and store in a variable
+            var raw = JSON.stringify({"ID":ID});
+            // create a JSON object with parameters for API call and store in a variable
+            var requestOptions = {
+                method: 'DELETE',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+            //make API call with parameters and use promises to get response
+            fetch("https://nnz4uc9tz3.execute-api.eu-west-2.amazonaws.com/dev", requestOptions)
+            .then(response => response.text())
+            .then(result => alert(JSON.parse(result).body))
+            .catch(error => console.log('error', error));
+			
+			// Call the fetchDataAndRenderTable function to get the latest values from the DB
+			fetchDataAndRenderTable();
+		}
+		
+		
+		// Function to fetch data from the API and render it in the table
+        function fetchDataAndRenderTable() {
+            var myHeaders = new Headers();
+            // add content type header to object
+            myHeaders.append("Content-Type", "application/json");
+			myHeaders.append("x-api-key", "kBG7Xczkbb51vUyhz77BXG9bTOmO6b26F7kZd4d8"); //hardcoded the value of API Key
+			//myHeaders.append("authorizationToken","iamgroot1"); //hardcoded the value of auth Token
+            // using built in JSON utility package turn object to string and store in a variable
+			
+            // create a JSON object with parameters for API call and store in a variable
+            var requestOptions = {
+                method: 'GET',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+			fetch('https://nnz4uc9tz3.execute-api.eu-west-2.amazonaws.com/dev/comments', requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    
+					// Extract item.ID.S values and populate them in an array
+					const idValues = data.body.map(my_id => my_id.ID.S);
+					// Get the dropdown select element
+					const dropdown = document.getElementById("dropdown");
+					dropdown.innerHTML = ''; // Clear existing rows
+					// Create and append options to the dropdown
+					idValues.forEach(value => {
+						const option = document.createElement("option");
+						option.value = value;
+						option.text = value;
+						dropdown.appendChild(option);
+					});
+					
+					const dropdown_for_delete = document.getElementById("dropdown_for_delete");
+					dropdown_for_delete.innerHTML = ''; // Clear existing rows
+					// Create and append options to the dropdown
+					idValues.forEach(value => {
+						const option = document.createElement("option");
+						option.value = value;
+						option.text = value;
+						dropdown_for_delete.appendChild(option);
+					});
+					
+					const tableBody = document.querySelector('#data-table tbody');
+                    tableBody.innerHTML = ''; // Clear existing rows
+					
+                    data.body.forEach(item => {
+                        const row = document.createElement('tr');
+
+
+                        // Populate other columns with data from the API response
+                        const idCell = document.createElement('td');
+                        idCell.textContent = item.ID.S;
+                        row.appendChild(idCell);
+
+                        const firstNameCell = document.createElement('td');
+                        firstNameCell.textContent = item.FirstName.S;
+                        row.appendChild(firstNameCell);
+
+                        const lastNameCell = document.createElement('td');
+                        lastNameCell.textContent = item.LastName.S;
+                        row.appendChild(lastNameCell);
+
+                        const companyCell = document.createElement('td');
+                        companyCell.textContent = item.company.S;
+                        row.appendChild(companyCell);
+
+                        const commentCell = document.createElement('td');
+                        commentCell.textContent = item.comment.S;
+                        row.appendChild(commentCell);
+
+                        // Append the row to the table body
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+
+        // Call the fetchDataAndRenderTable function when the page loads
+        fetchDataAndRenderTable();
+		// Function to get the selected value
+        
+			
+		
+		
+    </script>
+</head>
+<body>
+	<hr>
+	<h2>Post comment to me. Comment will be added to the DB via POST method </h2>
+    <form>
+        <label>First Name :</label>
+        <input type="text" id="fName">
+        <label>Last Name :</label>
+        <input type="text" id="lName"><br>
+		<label>Company :</label>
+        <input type="text" id="company">
+		<label>Your Comment :</label>
+        <input type="text" id="comment">
+        <!-- set button onClick method to call function we defined passing input values as parameters -->
+        <button type="button" onclick="callAPI(document.getElementById('fName').value,document.getElementById('lName').value,document.getElementById('company').value,document.getElementById('comment').value)">Post your Comment</button>
+		
+    </form>
+	
+	<hr>
+	<h2>Data from DynamoDB Table by GET method </h2>
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>First Name</th>
+				<th>Last Name</th>
+				<th>Company</th>
+				<th>Comment</th>
+                <!-- Add more columns as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+	
+	<hr>
+	<h2>Choose the ID from the table above, and enter new values below. The PUT Method will change the values</h2>
+	<h3>*Do not leave empty field, otherwise that value will be removed from the row</h3>
+	<form>
+        <label>ID :</label>
+        <input type="text" id="putID">
+		<label>First Name :</label>
+        <input type="text" id="putfName">
+        <label>Last Name :</label>
+        <input type="text" id="putlName"><br>
+		<label>Company :</label>
+        <input type="text" id="putcompany">
+		<label>Your Comment :</label>
+        <input type="text" id="putcomment">
+        <!-- set button onClick method to call function we defined passing input values as parameters -->
+        <button type="button" onclick="callPUTAPI(document.getElementById('putID').value,document.getElementById('putfName').value,document.getElementById('putlName').value,document.getElementById('putcompany').value,document.getElementById('putcomment').value)">PUT Values</button>
+		
+    </form>
+	
+	<hr>
+	<h2>Choose the ID from the dropdown, and enter new values. The PATCH Method will change the values</h2>
+	<h3>*Leave the field empty if you don't want to change it</h3>
+	<form>
+        <select id="dropdown">
+        <!-- Options will be populated here -->
+		</select>
+		
+		<label>First Name :</label>
+        <input type="text" id="patchfName">
+        <label>Last Name :</label>
+        <input type="text" id="patchlName"><br>
+		<label>Company :</label>
+        <input type="text" id="patchcompany">
+		<label>Your Comment :</label>
+        <input type="text" id="patchcomment">
+        <!-- set button onClick method to call function we defined passing input values as parameters -->
+        <button type="button" onclick="callPATCHAPI(document.getElementById('dropdown').value,document.getElementById('patchfName').value,document.getElementById('patchlName').value,document.getElementById('patchcompany').value,document.getElementById('patchcomment').value)">PATCH Values</button>
+			
+    </form>
+	<br>
+	<hr>
+	<h2>Choose the ID from dropdown, enter Authorization Token and click on Delete. DELETE Method will delete the row</h2>
+	<h3>example Authorization Token is 'iamthanos' or 'iamspiderman'</h3>
+	<form>
+        <label for="password">Identify - Who are you?</label>
+        <input type="password" id="deleteAuthToken">
+		<select id="dropdown_for_delete">
+        <!-- Options will be populated here -->
+		</select>
+				
+        <!-- set button onClick method to call function we defined passing input values as parameters -->
+        <button type="button" onclick="callDELETEAPI(document.getElementById('dropdown_for_delete').value,document.getElementById('deleteAuthToken').value)">Delete</button>
+			
+    </form>
+	<hr>
+	
+	
+</body>
+</html>
